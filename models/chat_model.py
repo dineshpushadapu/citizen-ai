@@ -1,29 +1,32 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer,pipeline,BitsAndBytesConfig
-import torch
-    
-# models/chat_model.py
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, BitsAndBytesConfig
+import os
+from dotenv import load_dotenv
+from huggingface_hub import InferenceClient
 
-class ChatModel:
-    def __init__(self, model_name="ibm/granite-13b-chat-v2"):
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        quant_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype="float16",
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_type="nf4"
-        )
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            device_map="auto",
-            quantization_config=quant_config
-        )
-        self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
+# Load environment variables from .env file
+load_dotenv()
 
-    def get_response(self, prompt):
-        output = self.pipeline(prompt, max_new_tokens=150, do_sample=True, temperature=0.7)
-        return output[0]['generated_text']
-    
-    
+# Get the Hugging Face API token from environment
+api_key = os.getenv("HF_API_TOKEN")
 
-      
+# Ensure the token is available
+if not api_key:
+    raise ValueError("Hugging Face API token not found in environment variables.")
+
+# Initialize the inference client
+client = InferenceClient(
+    model="deepseek-ai/DeepSeek-R1-0528",
+    token=api_key
+)
+
+# Send the chat completion request
+completion = client.chat_completion(
+    messages=[
+        {
+            "role": "user",
+            "content": "how to apply pan card in india?"
+        }
+    ],
+)
+
+# Print the model's response
+print(completion.choices[0].message["content"])
