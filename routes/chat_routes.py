@@ -1,22 +1,19 @@
-# routes/chat_routes.py
-
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, render_template, request, session
 from models.chat_model import generate_response
-from utils.text_cleaning import clean_text
 
-# Blueprint for the chat route
 chat_bp = Blueprint("chat_bp", __name__)
 
-@chat_bp.route("/chat", methods=["POST"])
+@chat_bp.route("/chat", methods=["GET", "POST"])
 def chat():
-    # Get message from request
-    user_input = request.json.get("message", "")
-    
-    if not user_input:
-        return jsonify({"error": "No message provided"}), 400
+    if request.method == "POST":
+        question = request.form.get("question")
+        if question:
+            response = generate_response(question)
+            return render_template("chat.html", question=question, question_response=response)
 
-    # Clean the input and generate a response
-    cleaned_input = clean_text(user_input)
-    response = generate_response(cleaned_input)
+    # Show after feedback submission
+    question = session.pop("question", None)
+    response = session.pop("response", None)
+    sentiment = session.pop("sentiment", None)
 
-    return jsonify({"response": response})
+    return render_template("chat.html", question=question, question_response=response, sentiment=sentiment)

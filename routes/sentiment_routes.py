@@ -1,17 +1,30 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, session, redirect, url_for, current_app
 from models.sentiment_model import analyze_sentiment
-from utils.text_cleaning import clean_text
+from datetime import datetime
 
-sentiment_bp = Blueprint("sentiment", __name__)
+sentiment_bp = Blueprint("sentiment_bp", __name__)
 
 @sentiment_bp.route("/sentiment", methods=["POST"])
 def sentiment():
-    message = request.json.get("message", "")
-    if not message:
-        return jsonify({"error": "No message provided"}), 400
+    question = request.form.get("question")
+    response = request.form.get("response")
+    feedback = request.form.get("feedback")
 
-    cleaned = clean_text(message)
-    sentiment = analyze_sentiment(cleaned)
-    return jsonify({"sentiment": sentiment})
+    if feedback:
+        sentiment_result = analyze_sentiment(feedback)
 
+        # Store in session to show in chat
+        session["question"] = question
+        session["response"] = response
+        session["sentiment"] = sentiment_result
 
+        # ✅ Save to MongoDB
+        current_app.db.feedbacks.insert_one({
+            "question": question,
+            "response": response,
+            "feedback": feedback,
+            "sentiment": sentiment_result,
+            "timestamp": datetime.utcnow()
+        })
+
+    return redirect(url_for("chat_bp.chat"))
