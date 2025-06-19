@@ -1,6 +1,18 @@
-# Ignore virtual environment
+# Virtual environment
 venv/
 
-# Ignore environment variables
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment variables
 .env
-_pychache/
+
+# IDE-specific files (optional but helpful)
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
