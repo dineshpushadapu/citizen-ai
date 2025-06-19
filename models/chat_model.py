@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
+from utils.text_cleaning import clean_text  # Import the cleaning utility
 
 # Load environment variables from .env file
 load_dotenv()
@@ -18,15 +19,16 @@ client = InferenceClient(
     token=api_key
 )
 
-# Send the chat completion request
-completion = client.chat_completion(
-    messages=[
-        {
-            "role": "user",
-            "content": "how to apply pan card in india?"
-        }
-    ],
-)
+def generate_response(user_input):
+    cleaned_input = clean_text(user_input)  # Clean the input
+    completion = client.chat_completion(
+        messages=[
+            {
+                "role": "user",
+                "content": cleaned_input
+            }
+        ],
+    )
+    return completion.choices[0].message["content"]
 
-# Print the model's response
-print(completion.choices[0].message["content"])
+# For testing directly in terminal
