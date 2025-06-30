@@ -1,58 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>CitizenAI - Chat</title>
+    <title>Citizen Chat Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new window.IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                        entry.target.classList.remove('opacity-0');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            document.querySelectorAll('.scroll-animate').forEach(el => {
+                el.classList.add('opacity-0');
+                observer.observe(el);
+            });
+        });
+    </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
-        <h1 class="text-2xl font-bold text-center mb-6">Citizen Chat Assistant</h1>
 
-        <!-- Chat Form -->
-        <form method="POST" class="flex flex-col space-y-4">
-            <label for="question" class="text-lg font-medium">Ask a Question:</label>
-            <input type="text" id="question" name="question" required
-                   class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                   placeholder="Type your question here..." value="{{ question }}">
-            <button type="submit"
-                    class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">
-                Submit
-            </button>
-        </form>
-
-        <!-- Chat Response -->
-        {% if question_response %}
-        <div class="mt-6">
-            <h2 class="text-lg font-semibold">Response:</h2>
-            <ul class="list-disc list-inside bg-gray-50 border rounded-md p-4 space-y-2">
-                {% for line in question_response.split('\n') %}
-                    {% if line.strip() %}
-                        <li>{{ line.strip() }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-
-            <!-- Feedback Form -->
-            <form method="POST" action="{{ url_for('sentiment_bp.sentiment') }}" class="mt-4 space-y-2">
-                <input type="hidden" name="question" value="{{ question }}">
-                <input type="hidden" name="response" value="{{ question_response }}">
-                <label for="feedback" class="block font-medium">Enter Feedback:</label>
-                <textarea name="feedback" rows="3" class="w-full p-2 border rounded" required></textarea>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
-                    Submit Feedback
-                </button>
-            </form>
+<body
+    class="min-h-screen flex flex-col bg-gradient-to-tr from-yellow-100 via-pink-100 via-60% to-blue-200 bg-fixed bg-no-repeat bg-cover relative">
+    <div class="pointer-events-none fixed inset-0 z-0">
+        <div
+            class="absolute left-1/2 top-0 -translate-x-1/2 w-[120vw] h-[120vw] bg-gradient-radial from-yellow-300/40 via-pink-200/30 to-transparent rounded-full blur-3xl opacity-90 animate-fade-in-down">
         </div>
-        {% endif %}
-
-        <!-- Feedback Sentiment Result -->
-        {% if sentiment %}
-        <div class="mt-6 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
-            <h2 class="font-semibold">Feedback Sentiment:</h2>
-            <p class="text-lg font-medium text-gray-800 mt-1">{{ sentiment }}</p>
+        <div
+            class="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-br from-pink-300/50 to-blue-200/0 rounded-full blur-2xl opacity-70 animate-fade-in-up">
         </div>
-        {% endif %}
     </div>
+
+    <div class="bg-blue-900 py-6 text-center text-white relative z-10">
+        <div class="flex flex-col items-center gap-2">
+            <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kyu7xb1v.json" background="transparent"
+                speed="1" style="width: 60px; height: 60px;" loop autoplay></lottie-player>
+            <h1 class="text-3xl font-extrabold tracking-tight">Citizen Chat Assistant</h1>
+        </div>
+        <a href="{{ url_for('index') }}"
+            class="text-blue-300 hover:text-pink-400 font-semibold text-sm block mt-2 transition-all duration-200">←
+            Back to Home</a>
+    </div>
+
+    <div class="container mx-auto max-w-5xl mt-10 p-0 flex flex-col items-center scroll-animate relative z-10">
+        <div
+            class="w-full bg-white bg-opacity-95 rounded-3xl shadow-2xl border-2 border-blue-100 p-14 flex flex-col gap-10">
+            <h2 class="text-3xl font-extrabold text-center mb-4 text-blue-900 tracking-tight animate-bounce-slow">Ask
+                the Assistant</h2>
+            <form action="" method="POST" class="flex flex-col gap-5">
+                <label for="question" class="font-semibold text-lg">Ask a Question:</label>
+                <input type="text" id="question" name="question" required placeholder="Type your question here..."
+                    value="{{ question }}"
+                    class="p-4 text-lg rounded-2xl border-2 border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full transition bg-blue-50">
+                <button type="submit"
+                    class="p-4 text-lg rounded-2xl bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-400 hover:to-blue-600 text-white font-bold shadow-lg transition-all duration-300 hover:scale-105 animate-pulse">Submit</button>
+            </form>
+
+            {% if question_response %}
+            <div class="mt-4 animate-fade-in-up w-full">
+                <h3 class="mb-3 text-lg font-semibold text-blue-900">Response:</h3>
+                <ul
+                    class="bg-gradient-to-br from-blue-50 via-white to-pink-50 rounded-2xl p-6 list-disc list-inside border-2 border-blue-200 text-blue-900 text-base shadow">
+                    {% for line in question_response.split('\n') %}
+                    {% if line.strip() %}
+                    <li>{{ line.strip() }}</li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+                <!-- Feedback Form -->
+                <form method="POST" action="{{ url_for('sentiment_bp.sentiment') }}" class="mt-8 space-y-3">
+                    <input type="hidden" name="question" value="{{ question }}">
+                    <input type="hidden" name="response" value="{{ question_response }}">
+                    <label for="feedback" class="block font-medium">Enter Feedback:</label>
+                    <textarea name="feedback" rows="3"
+                        class="w-full p-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-400 transition bg-blue-50"
+                        required></textarea>
+                    <button type="submit"
+                        class="bg-green-500 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-600 transition">Submit
+                        Feedback</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Feedback Sentiment Result -->
+            {% if sentiment %}
+            <div
+                class="mt-6 p-6 bg-gradient-to-r from-yellow-100 via-pink-50 to-blue-50 border-2 border-yellow-400 rounded-2xl animate-fade-in-up w-full">
+                <h3 class="font-semibold text-yellow-800">Feedback Sentiment:</h3>
+                <p class="text-lg font-medium text-gray-800 mt-1">{{ sentiment }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <style>
+        @keyframes fade-in-up {
+            0% {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 1.2s cubic-bezier(.4, 0, .2, 1);
+            opacity: 1 !important;
+        }
+
+        .opacity-0 {
+            opacity: 0 !important;
+        }
+
+        @keyframes fade-in-down {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-down {
+            animation: fade-in-down 1s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        @keyframes bounce-slow {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-18px);
+            }
+        }
+
+        .animate-bounce-slow {
+            animation: bounce-slow 2.5s infinite;
+        }
+
+        .animate-pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 24px 8px rgba(59, 130, 246, 0.25);
+            }
+        }
+    </style>
+
 </body>
+
 </html>

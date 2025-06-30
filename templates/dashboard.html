@@ -1,28 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <title>Citizen Insights Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new window.IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                        entry.target.classList.remove('opacity-0');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            document.querySelectorAll('.scroll-animate').forEach(el => {
+                el.classList.add('opacity-0');
+                observer.observe(el);
+            });
+        });
+    </script>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-        <h2 class="text-2xl font-bold mb-6">Citizen Insights Dashboard</h2>
 
-        <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="bg-green-200 p-4 rounded text-center font-semibold">Positive: {{ positive }}</div>
-            <div class="bg-yellow-200 p-4 rounded text-center font-semibold">Neutral: {{ neutral }}</div>
-            <div class="bg-red-200 p-4 rounded text-center font-semibold">Negative: {{ negative }}</div>
+<body
+    class="min-h-screen flex flex-col bg-gradient-to-tr from-yellow-100 via-pink-100 via-60% to-blue-200 bg-fixed bg-no-repeat bg-cover relative text-gray-900">
+    <div class="pointer-events-none fixed inset-0 z-0">
+        <div
+            class="absolute left-1/2 top-0 -translate-x-1/2 w-[120vw] h-[120vw] bg-gradient-radial from-yellow-300/40 via-pink-200/30 to-transparent rounded-full blur-3xl opacity-90 animate-fade-in-down">
         </div>
-
-        <h3 class="text-xl font-semibold mb-2">Recent Feedbacks</h3>
-        <ul class="space-y-2">
-            {% for fb in feedbacks %}
-            <li class="border p-3 rounded">
-                <strong>{{ fb.sentiment }}</strong>: {{ fb.message }}
-            </li>
-            {% endfor %}
-        </ul>
+        <div
+            class="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-br from-pink-300/50 to-blue-200/0 rounded-full blur-2xl opacity-70 animate-fade-in-up">
+        </div>
     </div>
+
+    <div class="bg-blue-900 py-6 text-center text-white relative z-10">
+        <div class="flex flex-col items-center gap-2">
+            <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kyu7xb1v.json" background="transparent"
+                speed="1" style="width: 60px; height: 60px;" loop autoplay></lottie-player>
+            <h1 class="text-3xl font-extrabold tracking-tight">Citizen Insights Dashboard</h1>
+            <div class="flex gap-4 mt-4">
+                <a href="{{ url_for('chat_bp.chat') }}"
+                    class="inline-block px-5 py-2 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-400 hover:to-blue-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 hover:scale-105">←
+                    Back to Chat</a>
+                <a href="{{ url_for('index') }}"
+                    class="inline-block px-5 py-2 bg-gradient-to-r from-blue-500 to-yellow-400 hover:from-pink-400 hover:to-blue-600 text-white font-semibold rounded-full shadow-lg transition-all duration-300 hover:scale-105">🏠
+                    Home</a>
+            </div>
+        </div>
+    </div>
+    <div
+        class="max-w-4xl mx-auto p-8 mt-10 bg-white bg-opacity-90 rounded-3xl shadow-2xl border-2 border-blue-100 scroll-animate relative z-10">
+        <div class="flex items-center gap-3 text-2xl font-semibold mb-8 animate-bounce-slow">
+            <span>📊</span> Weekly Sentiment Analysis
+        </div>
+        <div class="flex gap-6 flex-wrap mb-10">
+            <div
+                class="flex-1 min-w-[200px] p-6 rounded-2xl bg-gradient-to-br from-green-200 via-green-100 to-white text-center text-lg font-bold shadow-lg border-2 border-green-300 animate-fade-in-up">
+                <span class="block text-green-700 text-2xl mb-1">Positive</span>
+                <span class="text-3xl">{{ positive }}</span>
+                <span class="block text-green-700 text-lg mt-2">{{ positive_pct }}%</span>
+            </div>
+            <div
+                class="flex-1 min-w-[200px] p-6 rounded-2xl bg-gradient-to-br from-yellow-200 via-yellow-100 to-white text-center text-lg font-bold shadow-lg border-2 border-yellow-300 animate-fade-in-up">
+                <span class="block text-yellow-700 text-2xl mb-1">Neutral</span>
+                <span class="text-3xl">{{ neutral }}</span>
+                <span class="block text-yellow-700 text-lg mt-2">{{ neutral_pct }}%</span>
+            </div>
+            <div
+                class="flex-1 min-w-[200px] p-6 rounded-2xl bg-gradient-to-br from-pink-200 via-red-100 to-white text-center text-lg font-bold shadow-lg border-2 border-pink-300 animate-fade-in-up">
+                <span class="block text-pink-700 text-2xl mb-1">Negative</span>
+                <span class="text-3xl">{{ negative }}</span>
+                <span class="block text-pink-700 text-lg mt-2">{{ negative_pct }}%</span>
+            </div>
+        </div>
+       
+    <style>
+        @keyframes fade-in-up {
+            0% {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 1.2s cubic-bezier(.4, 0, .2, 1);
+            opacity: 1 !important;
+        }
+
+        .opacity-0 {
+            opacity: 0 !important;
+        }
+
+        @keyframes fade-in-down {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-down {
+            animation: fade-in-down 1s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        @keyframes bounce-slow {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-18px);
+            }
+        }
+
+        .animate-bounce-slow {
+            animation: bounce-slow 2.5s infinite;
+        }
+    </style>
+
 </body>
+
 </html>

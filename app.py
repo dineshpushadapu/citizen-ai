@@ -11,12 +11,13 @@ app.db = mongo.db
 app.config["DB"] = mongo.db  # Store db in config for blueprint access
 
 # Routes
-from routes.auth_routes import auth_bp
+from routes.auth_routes import auth_bp, google_bp
 from routes.chat_routes import chat_bp
 from routes.sentiment_routes import sentiment_bp
 from routes.dashboard_routes import dashboard_bp
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(google_bp, url_prefix="/google_login")
 app.register_blueprint(chat_bp)
 app.register_blueprint(sentiment_bp)
 app.register_blueprint(dashboard_bp)

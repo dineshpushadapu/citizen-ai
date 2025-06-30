@@ -1,33 +1,206 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>CitizenAI - Home</title>
+    <title>CitizenAI - Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script>
+        // Animate hero and services on scroll
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new window.IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                        entry.target.classList.remove('opacity-0');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            document.querySelectorAll('.scroll-animate').forEach(el => {
+                el.classList.add('opacity-0');
+                observer.observe(el);
+            });
+        });
+    </script>
 </head>
-<body class="bg-gray-100">
 
-    <!-- Navbar -->
-    <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
-        <div class="text-xl font-bold">CitizenAI</div>
-        <div class="space-x-4">
-            <a href="{{ url_for('index') }}" class="hover:underline">Home</a>
-            <a href="{{ url_for('chat_bp.chat') }}" class="hover:underline">Chat</a>
-            <a href="{{ url_for('dashboard_bp.dashboard') }}" class="hover:underline">Dashboard</a>
-            <a href="{{ url_for('about') }}" class="hover:underline">About</a>
-            {% if session.get('user') %}
-                <span class="font-semibold">👤 {{ session['user'] }}</span>
-                <a href="{{ url_for('auth_bp.logout') }}" class="hover:underline">Logout</a>
-            {% else %}
-                <a href="{{ url_for('auth_bp.signup') }}" class="hover:underline">Sign Up</a>
-                <a href="{{ url_for('auth_bp.login') }}" class="hover:underline">Login</a>
-            {% endif %}
+<body
+    class="min-h-screen flex flex-col bg-gradient-to-tr from-yellow-100 via-pink-200 via-60% to-blue-200 bg-fixed bg-no-repeat bg-cover relative">
+    <!-- Extra bright decorative gradients -->
+    <div class="pointer-events-none fixed inset-0 z-0">
+        <div
+            class="absolute left-1/2 top-0 -translate-x-1/2 w-[120vw] h-[120vw] bg-gradient-radial from-yellow-300/40 via-pink-200/30 to-transparent rounded-full blur-3xl opacity-90 animate-fade-in-down">
         </div>
+        <div
+            class="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-br from-pink-300/50 to-blue-200/0 rounded-full blur-2xl opacity-70 animate-fade-in-up">
+        </div>
+        <div
+            class="absolute left-0 bottom-0 w-1/3 h-1/3 bg-gradient-to-tr from-green-200/40 to-yellow-100/0 rounded-full blur-2xl opacity-60 animate-fade-in-up">
+        </div>
+    </div>
+    <!-- Decorative blurred gradients for vibrance -->
+    <div class="pointer-events-none fixed inset-0 z-0">
+        <div
+            class="absolute left-1/2 top-0 -translate-x-1/2 w-[120vw] h-[120vw] bg-gradient-radial from-blue-300/30 via-pink-200/20 to-transparent rounded-full blur-3xl opacity-80 animate-fade-in-down">
+        </div>
+        <div
+            class="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-br from-pink-200/40 to-blue-200/0 rounded-full blur-2xl opacity-60 animate-fade-in-up">
+        </div>
+    </div>
+    <!-- Navbar -->
+    <nav class="bg-blue-900 px-8 py-4 flex flex-col md:flex-row md:justify-between md:items-center shadow-lg">
+        <div class="flex items-center gap-3 mb-2 md:mb-0">
+            <span class="text-3xl font-extrabold text-white tracking-wide select-none">CitizenAI</span>
+        </div>
+        <ul class="flex flex-wrap gap-4 md:gap-8 text-white font-medium justify-center md:justify-end">
+            <li><a href="{{ url_for('about') }}" class="hover:text-green-300 transition">About</a></li>
+            <li><a href="#services" class="hover:text-green-300 transition">Services</a></li>
+            <li><a href="{{ url_for('chat_bp.chat') }}" class="hover:text-green-300 transition">Chat</a></li>
+            <li><a href="{{ url_for('dashboard_bp.dashboard') }}" class="hover:text-green-300 transition">Dashboard</a>
+            </li>
+            {% if session.get('user_name') %}
+            <li><span class="font-semibold">👤 {{ session['user_name'] }}</span></li>
+            <li><a href="{{ url_for('auth_bp.logout') }}" class="hover:text-red-300 transition">Logout</a></li>
+            {% else %}
+            <li><a href="{{ url_for('auth_bp.login') }}" class="hover:text-green-300 transition">Login</a></li>
+            <li><a href="{{ url_for('auth_bp.signup') }}" class="hover:text-green-300 transition">Sign Up</a></li>
+            {% endif %}
+        </ul>
     </nav>
 
-    <div class="p-8 text-center">
-        <h1 class="text-3xl font-bold">Welcome to CitizenAI</h1>
-        <p class="mt-4 text-gray-700">Empowering Citizens Through AI</p>
-    </div>
+    <!-- Hero Section -->
+    <section class="flex flex-col md:flex-row min-h-[420px] relative z-10">
+        <div class="flex-1 flex flex-col justify-center px-10 py-16 text-white scroll-animate" style="z-index:1;">
+            <h2 class="text-5xl md:text-6xl font-extrabold mb-6 drop-shadow-lg leading-tight animate-bounce-slow">
+                Empowering Citizens<br class="hidden md:block"> Through <span class="text-green-300">AI</span></h2>
+            <p class="text-lg md:text-2xl mb-8 max-w-2xl">CitizenAI is your intelligent assistant for civic engagement.
+                From accessing services to sharing feedback, our AI-powered platform helps citizens and governments
+                communicate better—anytime, anywhere.</p>
+            <a href="{{ url_for('auth_bp.signup') }}"
+                class="inline-block bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-400 hover:to-blue-600 text-white font-bold px-10 py-4 rounded-xl shadow-xl text-lg transition-all duration-300 hover:scale-105 animate-pulse">Get
+                Started</a>
+            <p class="mt-8 text-base text-blue-100">Join us in building a smarter, more responsive civic environment.
+            </p>
+        </div>
+        <div class="flex-1 min-h-[320px] flex items-center justify-center relative scroll-animate">
+            <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kyu7xb1v.json" background="transparent"
+                speed="1" style="width: 340px; height: 340px;" loop autoplay></lottie-player>
+            <div
+                class="absolute inset-0 rounded-bl-3xl md:rounded-bl-none md:rounded-l-3xl shadow-2xl bg-gradient-to-br from-yellow-200/80 via-pink-200/60 to-blue-200/60">
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="max-w-6xl mx-auto py-20 px-4 relative z-10">
+        <h3 class="text-3xl font-extrabold text-blue-900 mb-12 text-center tracking-tight scroll-animate">Our Services
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div
+                class="bg-gradient-to-br from-yellow-100 via-pink-50 to-blue-100 rounded-2xl shadow-lg p-8 text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 scroll-animate group relative overflow-hidden border-2 border-yellow-200">
+                <div class="text-5xl mb-4 animate-bounce">💬</div>
+                <h4 class="font-bold text-xl mb-2 text-blue-900">AI Chat Assistant</h4>
+                <p class="text-gray-700">Get instant answers to your government-related queries with our smart chatbot.
+                </p>
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-yellow-200/0 to-pink-200/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0">
+                </div>
+            </div>
+            <div
+                class="bg-gradient-to-br from-pink-100 via-green-50 to-blue-100 rounded-2xl shadow-lg p-8 text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 scroll-animate group relative overflow-hidden border-2 border-pink-200">
+                <div class="text-5xl mb-4 animate-bounce">📊</div>
+                <h4 class="font-bold text-xl mb-2 text-blue-900">Sentiment Dashboard</h4>
+                <p class="text-gray-700">View real-time analytics and feedback sentiment from citizens across the
+                    platform.</p>
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-pink-200/0 to-green-200/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0">
+                </div>
+            </div>
+            <div
+                class="bg-gradient-to-br from-blue-100 via-yellow-50 to-pink-100 rounded-2xl shadow-lg p-8 text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 scroll-animate group relative overflow-hidden border-2 border-blue-200">
+                <div class="text-5xl mb-4 animate-bounce">🔒</div>
+                <h4 class="font-bold text-xl mb-2 text-blue-900">Secure & Private</h4>
+                <p class="text-gray-700">Your data is protected with industry-leading security and privacy standards.
+                </p>
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-blue-200/0 to-yellow-200/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0">
+                </div>
+            </div>
+        </div>
+    </section>
+    <style>
+        @keyframes fade-in-up {
+            0% {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 1.2s cubic-bezier(.4, 0, .2, 1);
+            opacity: 1 !important;
+        }
+
+        .opacity-0 {
+            opacity: 0 !important;
+        }
+
+        @keyframes fade-in-down {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-down {
+            animation: fade-in-down 1s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        @keyframes bounce-slow {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-18px);
+            }
+        }
+
+        .animate-bounce-slow {
+            animation: bounce-slow 2.5s infinite;
+        }
+
+        .animate-pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 24px 8px rgba(59, 130, 246, 0.25);
+            }
+        }
+    </style>
 </body>
+
 </html>

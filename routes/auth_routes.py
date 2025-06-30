@@ -1,8 +1,37 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
+from flask_dance.contrib.google import make_google_blueprint, google
+import os
 from database.user_model import User
 from flask import current_app
 
 auth_bp = Blueprint("auth_bp", __name__)
+
+# Google OAuth blueprint (client id/secret should be set in environment or config)
+google_bp = make_google_blueprint(
+    client_id=os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "your-google-client-id"),
+    client_secret=os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", "your-google-client-secret"),
+    scope=["profile", "email"],
+    redirect_url="/google_login/callback"
+)
+@auth_bp.route("/google_login")
+def google_login():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v2/userinfo")
+    if not resp.ok:
+        flash("Failed to fetch user info from Google.", "error")
+        return redirect(url_for("auth_bp.login"))
+    info = resp.json()
+    email = info["email"]
+    name = info.get("name", email.split("@")[0])
+    user = User.find_by_email(current_app.config["DB"], email)
+    if not user:
+        user = User(name, email, "")
+        user.save(current_app.config["DB"])
+    session["user_id"] = str(user["_id"])
+    session["user_name"] = user["name"]
+    flash("Logged in with Google!", "success")
+    return redirect(url_for("index"))
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def signup():
